@@ -4,13 +4,15 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from protgen.data import ProteinDataset, IGNORE_INDEX
 from protgen.models.mlp import MLP
+from protgen.models.gru import GRU
 
 train_data=ProteinDataset("data/train.csv")
 val_data=ProteinDataset("data/val.csv")
 train_loader=DataLoader(train_data, batch_size=128, shuffle=True)
 val_loader=DataLoader(val_data, batch_size=128)
 
-model=MLP()
+MODEL='gru'
+model=GRU() if MODEL=='gru' else MLP()
 opt=torch.optim.Adam(model.parameters(), lr=1e-3)
 
 def loss_fn(model, x, x_shifted):
@@ -40,5 +42,5 @@ for epoch in range(1,11):
     val_loss=total/len(val_data)
     if val_loss < best:
         best = val_loss
-        torch.save(model.state_dict(), "checkpoints/mlp.pt")
+        torch.save(model.state_dict(), f"checkpoints/{MODEL}.pt")
     print(f'epoch{epoch}|val loss{val_loss:.4f}|val perplexity:{math.exp(val_loss):.2f}')
