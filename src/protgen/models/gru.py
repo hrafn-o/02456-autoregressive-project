@@ -9,4 +9,9 @@ class GRU(nn.Module):
         e=self.emb(x)
         h,_=self.gru(e)
         return self.out(h)
-    
+    def features(self,x):
+        e=self.emb(x)
+        h,_=self.gru(e)
+        return h
+    def forward(self,x):
+        return self.out(self.features(x))
